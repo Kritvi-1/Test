@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Assessment Report</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Top Ribbon */
+        .top-ribbon {
+            background: #1f2d5c;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ribbon-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .header {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            color: #1f2d5c;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        .back-button:hover {
+            background: #e0e0e0;
+        }
+        .form-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3b45;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+        .info-text {
+            font-size: 13px;
+            color: #5f6368;
+            margin-top: 4px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn-primary {
+            padding: 12px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+        .btn-secondary {
+            padding: 12px 24px;
+            background: white;
+            color: #5f6368;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Ribbon -->
+    <div class="top-ribbon">
+        <div class="ribbon-title">Assessment Data Retriever</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <button id="backButton" class="back-button">← Back to Submissions</button>
+            <h1>Program Assessment Report</h1>
+            <p id="programInfo" style="color: #5f6368; margin: 8px 0 0 0;"></p>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loadingIndicator" style="text-align: center; padding: 60px; background: white; border-radius: 12px; margin-bottom: 24px;">
+            <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #1a73e8; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 16px; color: #5f6368;">Loading report data...</p>
+        </div>
+
+        <div class="form-panel" id="reportForm" style="display: none;">
+            <form id="reportFormElement">
+                <div class="form-group">
+                    <label>Program</label>
+                    <input type="text" id="programField">
+                </div>
+
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="text" id="yearField">
+                </div>
+
+                <div class="form-group">
+                    <label>Semester</label>
+                    <input type="text" id="semesterField">
+                </div>
+
+                <div class="form-group">
+                    <label>Course</label>
+                    <input type="text" id="courseField">
+                </div>
+
+                <div class="form-group">
+                    <label>Method Of Assessment</label>
+                    <textarea id="methodField"></textarea>
+                    <p class="info-text">Sample: Program students will answer targeted 'selected assignment name' assignment questions in 'Course Code'</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Performance Targets</label>
+                    <textarea id="performanceField">A rating of 70 (out of 100) is considered to be the minimum level for successful attainment of this outcome. The threshold is 70% of the class achieving the minimum rating of 70.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Assessment Results</label>
+                    <textarea id="resultsField"></textarea>
+                    <p class="info-text">Fill in based on the assignment: What is the average? How many percent of the student for 70 or higher? Sample: The average of 'program' students is 85. 90% of the 'program' students got 70 or higher</p>
+                </div>
+
+                <div class="form-group">
+                    <label>How many students were assessed</label>
+                    <input type="text" id="studentsAssessedField">
+                </div>
+
+                <div class="form-group">
+                    <label>Was the Performance Target met (Yes/No)</label>
+                    <select id="targetMetField">
+                        <option value="">Select...</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                    <p class="info-text">Fill in Yes if 70% or more of the program students got more than 70</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Planned Actions Using the Assessment Results to Improve Student Learning</label>
+                    <textarea id="plannedActionsField"></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" id="downloadBtn" class="btn-primary">Download CSV</button>
+                    <button type="button" id="cancelBtn" class="btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8765/api';
+        const params = new URLSearchParams(window.location.search);
+        const program = params.get('program');
+        const courseId = params.get('courseId');
+        const assignmentId = params.get('assignmentId');
+        const token = sessionStorage.getItem('canvasToken');
+
+        // Load data
+        async function loadData() {
+            try {
+                // Get course and assignment info
+                const [coursesRes, assignmentRes, submissionsRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/courses?token=${encodeURIComponent(token)}`),
+                    fetch(`${API_BASE_URL}/assignment?course_id=${courseId}&assignment_id=${assignmentId}&token=${encodeURIComponent(token)}`),
+                    fetch(`${API_BASE_URL}/submissions?course_id=${courseId}&assignment_id=${assignmentId}&token=${encodeURIComponent(token)}`)
+                ]);
+
+                const courses = await coursesRes.json();
+                const assignment = await assignmentRes.json();
+                const submissions = await submissionsRes.json();
+
+                const course = courses.find(c => String(c.id) === String(courseId));
+                const courseCode = course?.course_code || course?.name || '';
+                const assignmentPoints = assignment?.points_possible || 100;
+
+                // Get roster for program matching
+                const roster = JSON.parse(sessionStorage.getItem(`roster_${courseId}`) || '{}');
+
+                // Filter submissions for this program
+                const programSubmissions = submissions.filter(s => {
+                    const uid = s.sis_user_id;
+                    if (!uid) return false;
+                    const info = roster[uid];
+                    if (!info) return false;
+                    const normalized = normalizeProgram(info.major);
+                    return normalized === program;
+                });
+
+                // Calculate stats using actual assignment points
+                const graded = programSubmissions.filter(s => s.score != null);
+                const avgScore = graded.length > 0 
+                    ? (graded.reduce((sum, s) => sum + (s.score || 0), 0) / graded.length).toFixed(2)
+                    : 0;
+                
+                // Calculate 70% threshold based on actual points
+                const threshold70 = assignmentPoints * 0.7;
+                const above70 = graded.filter(s => s.score >= threshold70).length;
+                const percent70 = graded.length > 0 
+                    ? ((above70 / graded.length) * 100).toFixed(0)
+                    : 0;
+
+                // Populate form
+                document.getElementById('programField').value = program;
+                document.getElementById('yearField').value = new Date().getFullYear();
+                document.getElementById('semesterField').value = getSemester();
+                document.getElementById('courseField').value = courseCode;
+                document.getElementById('methodField').value = `${program} students will answer targeted '${assignment.name}' assignment questions in '${courseCode}'`;
+                document.getElementById('performanceField').value = `A rating of ${threshold70.toFixed(1)} (out of ${assignmentPoints}) is considered to be the minimum level for successful attainment of this outcome. The threshold is 70% of the class achieving the minimum rating of ${threshold70.toFixed(1)}.`;
+                document.getElementById('resultsField').value = `Average: ${avgScore} out of ${assignmentPoints}. Students above 70%: ${percent70}%`;
+                document.getElementById('studentsAssessedField').value = programSubmissions.length;
+
+                // Auto-select Yes/No based on 70% threshold
+                document.getElementById('targetMetField').value = parseFloat(percent70) >= 70 ? 'Yes' : 'No';
+
+                document.getElementById('programInfo').textContent = `${program} • ${courseCode} • ${assignment.name}`;
+
+                // Store data for CSV
+                window.reportData = {
+                    program, year: new Date().getFullYear(), semester: getSemester(),
+                    course: courseCode, assignment: assignment.name,
+                    method: document.getElementById('methodField').value,
+                    performance: document.getElementById('performanceField').value,
+                    results: document.getElementById('resultsField').value,
+                    studentsAssessed: programSubmissions.length,
+                    targetMet: parseFloat(percent70) >= 70 ? 'Yes' : 'No',
+                    plannedActions: ''
+                };
+                
+                // Hide loading, show form
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('reportForm').style.display = 'block';
+
+            } catch (err) {
+                console.error('Error loading data:', err);
+                document.getElementById('loadingIndicator').style.display = 'none';
+                alert('Failed to load report data');
+            }
+        }
+
+        function normalizeProgram(major) {
+            if (!major) return "Unknown Program";
+            let normalized = major;
+            normalized = normalized.replace(/^[A-Z]{3}\d{4}\.\d+[A-Z]\d+\s+/g, "").trim();
+            normalized = normalized.replace(/^\[.*?\]\s*/g, "").trim();
+            
+            const lower = normalized.toLowerCase();
+            if (lower.includes("computer science")) return "Computer Science";
+            if (lower.includes("computer engineering")) return "Computer Engineering";
+            if (lower.includes("cybersecurity")) return "Cybersecurity";
+            if (lower.includes("biomedical science")) return "Biomedical Sciences";
+            if (lower.includes("data intelligence")) return "Data Intelligence";
+            
+            return normalized;
+        }
+
+        function getSemester() {
+            const month = new Date().getMonth() + 1;
+            if (month >= 1 && month <= 5) return "Spring";
+            if (month >= 6 && month <= 7) return "Summer";
+            return "Fall";
+        }
+
+        // Download CSV
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const data = {
+                program: document.getElementById('programField').value,
+                year: document.getElementById('yearField').value,
+                semester: document.getElementById('semesterField').value,
+                course: document.getElementById('courseField').value,
+                method: document.getElementById('methodField').value,
+                performance: document.getElementById('performanceField').value,
+                results: document.getElementById('resultsField').value,
+                studentsAssessed: document.getElementById('studentsAssessedField').value,
+                targetMet: document.getElementById('targetMetField').value,
+                plannedActions: document.getElementById('plannedActionsField').value
+            };
+
+            const csv = `Program,${data.program}\nYear,${data.year}\nSemester,${data.semester}\nCourse,${data.course}\nMethod Of Assessment,"${data.method}"\nPerformance Targets,"${data.performance}"\nAssessment Results,"${data.results}"\nHow many students were assessed,${data.studentsAssessed}\nWas the Performance Target met (Yes/No),${data.targetMet}\nPlanned Actions Using the Assessment Results to Improve Student Learning,"${data.plannedActions}"\n`;
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.year}-${data.semester}-${data.course}-${data.program}-Report.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+
+        // Back and Cancel buttons
+        document.getElementById('backButton').addEventListener('click', () => {
+            window.location.href = `submissions.html?courseId=${courseId}&assignmentId=${assignmentId}`;
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            window.location.href = `submissions.html?courseId=${courseId}&assignmentId=${assignmentId}`;
+        });
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

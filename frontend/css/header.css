@@ -1,0 +1,98 @@
+/* Navbar Component Styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #2d3b45;
+    border-bottom: 1px solid #1f2933;
+    z-index: 1000;
+}
+
+.navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.logo-icon {
+    width: 28px;
+    height: 28px;
+    color: #0374b5;
+}
+
+.brand-name {
+    font-weight: 600;
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-link {
+    color: #b8c5d0;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-link.active {
+    background-color: #0374b5;
+    color: white;
+}
+
+.navbar-profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #0374b5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.profile-icon:hover {
+    background-color: #005a8c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar-menu {
+        display: none;
+    }
+    
+    .brand-name {
+        font-size: 18px;
+    }
+}
+

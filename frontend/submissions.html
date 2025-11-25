@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>View Submissions</title>
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/submissions.css" />
+  
+  <!-- Tabulator CSS -->
+  <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background:#f7f8fb;
+      font-family: Inter, system-ui, Arial, sans-serif;
+    }
+
+    header {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 18px;
+      background:#1f2d5c;
+      color:#fff;
+    }
+
+    .container {
+      max-width:1100px;
+      margin:18px auto 32px auto;
+      padding:0 14px;
+    }
+
+    .panel {
+      background:#fff;
+      border:1px solid #e7e7e7;
+      border-radius:12px;
+      padding:16px 18px;
+      margin-bottom:24px; /* FIXED: Increased spacing between sections */
+    }
+
+    .panel h3 {
+      margin-top: 0;
+      margin-bottom: 20px; /* FIXED: More space below section titles */
+    }
+
+    .flex {
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .chip {
+      background:#eef3ff;
+      border:1px solid #d9e3ff;
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:14px;
+    }
+
+    .analytics-card {
+      background:#eef6ff;
+      border:1px solid #cfe0ff;
+      border-radius:12px;
+      padding:12px 14px;
+      min-width:220px;
+      font-size:14px;
+    }
+
+    .muted {
+      color:#6b7280;
+      font-size:12px;
+    }
+
+    .tag {
+      background:#f4f4f5;
+      border:1px solid #e7e7ea;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:12px;
+    }
+
+    /* Fancy back button */
+    .back-button {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 12px;
+      border-radius:8px;
+      border:none;
+      background:#fff;
+      color:#1f2d5c;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .back-button:hover {
+      background:#e5e7ff;
+    }
+
+    #loadingState {
+      padding:24px;
+      text-align:center;
+    }
+
+    /* FIXED: Proper spacing for Download CSV button */
+    #downloadCSV {
+      padding: 10px 20px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 28px; /* FIXED: More spacing before table */
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);
+    }
+    
+    #downloadCSV:hover {
+      background: #1557b0;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+    }
+    
+    /* Tabulator table container */
+    #submissionsTable {
+      margin-top: 16px;
+    }
+    
+    /* Report button styling */
+    .report-btn:hover {
+      background: #1557b0 !important;
+    }
+    
+    /* ========== CUSTOM TABULATOR STYLING ========== */
+    
+    /* Table wrapper with nice border */
+    .tabulator {
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 8px !important;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      background: white;
+    }
+    
+    /* Header styling - DARK BLUE theme like original */
+    .tabulator .tabulator-header {
+      background: #1f2d5c !important;
+      border-bottom: none !important;
+      font-weight: 600;
+    }
+    
+    .tabulator .tabulator-col {
+      background: transparent !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .tabulator .tabulator-col:last-child {
+      border-right: none !important;
+    }
+    
+    /* Header text - WHITE on dark blue */
+    .tabulator .tabulator-col-title {
+      color: #ffffff !important;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px !important;
+    }
+    
+    /* Sortable column hover - slightly lighter */
+    .tabulator .tabulator-col.tabulator-sortable:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+      cursor: pointer;
+    }
+    
+    /* HIDE SORT ARROWS */
+    .tabulator .tabulator-arrow {
+      display: none !important;
+    }
+    
+    /* Remove extra padding for arrows since we're hiding them */
+    .tabulator-col.tabulator-sortable .tabulator-col-title {
+      padding-right: 12px !important;
+    }
+    
+    /* Table body rows - WHITE and LIGHT GREY alternating */
+    .tabulator .tabulator-row {
+      border-bottom: 1px solid #e0e0e0 !important;
+      background: #ffffff !important;
+    }
+    
+    .tabulator .tabulator-row:hover {
+      background: #f5f7fa !important;
+    }
+    
+    .tabulator .tabulator-row.tabulator-row-even {
+      background: #f8f9fa !important;
+    }
+    
+    .tabulator .tabulator-row.tabulator-row-even:hover {
+      background: #f0f2f5 !important;
+    }
+    
+    /* Cell styling */
+    .tabulator .tabulator-cell {
+      border-right: 1px solid #f0f0f0 !important;
+      padding: 12px !important;
+      color: #2d3b45;
+      font-size: 14px;
+    }
+    
+    .tabulator .tabulator-cell:last-child {
+      border-right: none !important;
+    }
+    
+    /* Table footer (if used) */
+    .tabulator .tabulator-footer {
+      background: #f8f9fa !important;
+      border-top: 1px solid #e0e0e0 !important;
+      font-size: 13px;
+      color: #5f6368;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header>
+    <button id="backButton" class="back-button">← Back</button>
+    <div style="font-weight:700; font-size:18px;">View Submissions</div>
+  </header>
+
+  <main class="container">
+    <!-- Loading -->
+    <div id="loadingState">Loading…</div>
+
+    <!-- Assignment info -->
+    <section id="assignmentInfo" class="panel" style="display:none">
+      <div id="assignTitle" style="font-size:20px;font-weight:700"></div>
+      <div class="flex" style="margin-top:8px">
+        <div class="chip">Due: <span id="assignDue">—</span></div>
+        <div class="chip">Points: <span id="assignPts">—</span></div>
+      </div>
+    </section>
+
+    <!-- FIXED: Removed roster upload section entirely -->
+
+    <!-- Assignment analytics -->
+    <section class="panel">
+      <h3 style="margin-top:0;">Assignment Analytics</h3>
+      <div id="analyticsCards" class="flex"></div>
+      <div id="classStats" class="muted" style="margin-top:10px"></div>
+    </section>
+
+    <!-- Analytics by Program -->
+    <section class="panel">
+      <h3 style="margin-top:0;">Analytics by Program</h3>
+      <div id="majorAnalytics"></div>
+    </section>
+
+    <!-- Submissions table with Tabulator -->
+    <section id="submissionsContainer" class="panel" style="display:none">
+      <h3 style="margin-bottom:20px;">Student Submissions</h3>
+      
+      <!-- Download buttons -->
+      <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+        <button id="downloadSubmissionsCSV" style="padding: 10px 20px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);">
+          Download CSV
+        </button>
+        <button id="downloadSubmissionsCSVNoNames" style="padding: 10px 20px; background: #5f6368; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(95, 99, 104, 0.25);">
+          Download CSV without Names
+        </button>
+      </div>
+      
+      <div id="submissionsTable"></div>
+    </section>
+  </main>
+
+  <!-- Tabulator JS -->
+  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+  
+  <!-- Main script -->
+  <script src="js/submissions.js?v=1763438500"></script>
+</body>
+</html>

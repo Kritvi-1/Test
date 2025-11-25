@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Data Retriever</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/class-card.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        
+        /* Top Ribbon - Hidden initially, shown after token */
+        .top-ribbon {
+            display: none; /* Hidden until token is entered */
+            background: #1f2d5c;
+            color: white;
+            padding: 16px 32px;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .top-ribbon.show {
+            display: flex; /* Show after token */
+        }
+        
+        .ribbon-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        #tokenButtonRibbon {
+            padding: 8px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        #tokenButtonRibbon:hover {
+            background: #1557b0;
+        }
+        
+        /* Initial Welcome Box - Shown before token */
+        .main-header {
+            text-align: center;
+            margin: 40px auto;
+            padding: 48px 32px;
+            max-width: 900px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+            border: 3px solid #1a73e8;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(26, 115, 232, 0.15);
+            position: relative;
+        }
+        
+        .main-header.hide {
+            display: none;
+        }
+        
+        .main-header h1 {
+            margin: 0 0 16px 0;
+            font-size: 42px;
+            color: #1f2d5c;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .main-header p {
+            color: #5f6368;
+            margin: 0 0 32px 0;
+            font-size: 20px;
+            font-weight: 400;
+        }
+        
+        .token-button-wrapper {
+            margin-top: 24px;
+        }
+        
+        #tokenButton {
+            padding: 14px 32px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.25);
+        }
+        
+        #tokenButton:hover {
+            background: #1557b0;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.35);
+        }
+        
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .content-wrapper.with-ribbon {
+            padding-top: 20px; /* Less padding when ribbon is present */
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2d5c;
+            margin: 0 0 32px 0;
+            display: none; /* Hidden initially */
+        }
+        
+        .page-title.show {
+            display: block;
+        }
+
+        /* Error message styling */
+        #errorState {
+            background: #fce8e6;
+            border: 1px solid #c5221f;
+            color: #c5221f;
+            padding: 16px 24px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        #errorState p {
+            margin: 0 0 12px 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Ribbon (hidden initially) -->
+    <div id="topRibbon" class="top-ribbon">
+        <div class="ribbon-title">Assessment Data Retriever</div>
+        <button id="tokenButtonRibbon">🔑 Canvas Token</button>
+    </div>
+
+    <!-- Token Modal -->
+    <div id="tokenModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);">
+            <h2 style="margin: 0 0 1rem 0; color: #2d3b45; font-size: 1.5rem;">Connect to Canvas</h2>
+            <p style="margin: 0 0 1.5rem 0; color: #5f6368;">Enter your Canvas API token to access your courses.</p>
+            <input type="text" id="tokenInput" placeholder="Paste your Canvas API token here..." style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 1rem; margin-bottom: 1rem; box-sizing: border-box;">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button id="cancelTokenBtn" style="padding: 0.75rem 1.5rem; border: none; border-radius: 6px; background: #f1f3f4; color: #5f6368; cursor: pointer;">Cancel</button>
+                <button id="connectTokenBtn" style="padding: 0.75rem 1.5rem; border: none; border-radius: 6px; background: #1a73e8; color: white; cursor: pointer;">Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initial Welcome Box (shown before token) -->
+    <div id="mainHeader" class="main-header">
+        <h1>Assessment Data Retriever</h1>
+        <p>Select a course to begin</p>
+        <div class="token-button-wrapper">
+            <button id="tokenButton">
+                🔑 Enter Canvas Token
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="contentWrapper" class="content-wrapper">
+        <h1 id="pageTitle" class="page-title">Courses</h1>
+        
+        <div id="errorState" style="display: none;">
+            <p id="errorMessage">Failed to load courses</p>
+            <button id="retryButton" style="margin-top: 0.5rem; padding: 0.625rem 1.5rem; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer;">Retry</button>
+        </div>
+        
+        <div id="classGrid" class="class-grid"></div>
+        
+        <div id="loadingState" style="display: none; text-align: center; padding: 4rem;">
+            <p>Loading courses...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/class-selector.js?v=8"></script>
+    <script src="js/app.js?v=8"></script>
+</body>
+</html>

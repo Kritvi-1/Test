@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Class Roster - Assessment Data Retriever</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .back-button:hover {
+            background: #e0e0e0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #1f2d5c;
+            margin: 0 0 8px 0;
+        }
+        .header p {
+            color: #5f6368;
+            margin: 0;
+        }
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #1a73e8;
+            background: #f8fbff;
+        }
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .upload-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        .upload-btn:hover {
+            background: #1557b0;
+        }
+        .file-name {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #5f6368;
+        }
+        .status-message {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+        }
+        .status-message.success {
+            background: #e6f4ea;
+            color: #137333;
+            border: 1px solid #137333;
+        }
+        .status-message.error {
+            background: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #c5221f;
+        }
+        .student-list {
+            margin-top: 24px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .student-item {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .continue-btn {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+        .continue-btn:hover {
+            background: #1557b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="window.location.href='index.html'">
+            ← Back to Courses
+        </button>
+        
+        <div class="header">
+            <h1>Upload Class Roster</h1>
+            <p id="courseName">Loading course information...</p>
+        </div>
+
+        <div class="panel">
+            <div class="upload-area">
+                <div class="upload-icon">📄</div>
+                <h3>Upload USF Photo Roster PDF</h3>
+                <p>This will attach programs to each student and enable analytics by program</p>
+                <label class="upload-btn">
+                    Choose File
+                    <input type="file" id="rosterFileInput" accept="application/pdf" style="display: none;">
+                </label>
+                <div id="fileName" class="file-name">No file selected</div>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <div id="studentList" class="student-list" style="display: none;"></div>
+
+            <button id="continueBtn" class="continue-btn">Continue to Assignments →</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8765/api';
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get('courseId');
+        const token = sessionStorage.getItem('canvasToken');
+
+        if (!courseId || !token) {
+            window.location.href = 'index.html';
+        }
+
+        // Load course name
+        fetch(`${API_BASE_URL}/courses?token=${encodeURIComponent(token)}`)
+            .then(res => res.json())
+            .then(courses => {
+                const course = courses.find(c => String(c.id) === String(courseId));
+                if (course) {
+                    document.getElementById('courseName').textContent = course.name;
+                }
+            });
+
+        // Store roster data in sessionStorage for use in assignments/submissions pages
+        let rosterData = null;
+
+        document.getElementById('rosterFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            document.getElementById('fileName').textContent = file ? file.name : 'No file selected';
+
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'status-message';
+            statusDiv.textContent = '⏳ Processing roster...';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/upload_roster`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Failed to parse roster (HTTP ${res.status})`);
+                }
+
+                rosterData = await res.json();
+                const studentCount = Object.keys(rosterData).length;
+
+                // Store in sessionStorage
+                sessionStorage.setItem(`roster_${courseId}`, JSON.stringify(rosterData));
+
+                statusDiv.className = 'status-message success';
+                statusDiv.textContent = `✅ Roster uploaded successfully! Found ${studentCount} students.`;
+
+                // Show student list
+                displayStudentList(rosterData);
+
+                // Show continue button
+                document.getElementById('continueBtn').style.display = 'block';
+
+            } catch (err) {
+                statusDiv.className = 'status-message error';
+                statusDiv.textContent = `❌ Error: ${err.message}`;
+            }
+        });
+
+        function displayStudentList(roster) {
+            const listDiv = document.getElementById('studentList');
+            listDiv.style.display = 'block';
+            listDiv.innerHTML = '<h4 style="margin-top: 0;">Students and Programs:</h4>';
+
+            const entries = Object.entries(roster).slice(0, 10); // Show first 10
+            entries.forEach(([uid, info]) => {
+                const item = document.createElement('div');
+                item.className = 'student-item';
+                item.innerHTML = `
+                    <span><strong>${info.name}</strong></span>
+                    <span>${info.major}</span>
+                `;
+                listDiv.appendChild(item);
+            });
+
+            if (Object.keys(roster).length > 10) {
+                const more = document.createElement('div');
+                more.className = 'student-item';
+                more.innerHTML = `<span style="color: #5f6368; font-style: italic;">... and ${Object.keys(roster).length - 10} more students</span>`;
+                listDiv.appendChild(more);
+            }
+        }
+
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            window.location.href = `assignments.html?courseId=${courseId}`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+/* Class Card Component Styles */
+.class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.class-card {
+    background: #1a1a1a;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    height: 180px;
+}
+
+/* Gradient background */
+.class-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--card-color, #1a73e8) 0%, var(--card-color-light, #4285f4) 100%);
+    opacity: 0.85;
+    transition: all 0.3s ease;
+    z-index: 0;
+}
+
+/* Subtle pattern overlay */
+.class-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.class-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+.class-card:hover::before {
+    opacity: 0.92;
+}
+
+.class-card.selected {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+.class-card.selected::before {
+    opacity: 0.95;
+}
+
+.class-header {
+    position: relative;
+    z-index: 2;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+/* REMOVED: .class-icon-wrapper and .class-icon styles to remove book icons */
+
+.class-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.class-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin: 0;
+}
+
+.class-code {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.class-meta {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: auto;
+}
+
+.class-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.class-meta-item svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+}
+
+.class-students {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.class-students svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+}
+
+.class-term {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.class-term svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .class-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+    }
+    
+    .class-card {
+        padding: 20px;
+    }
+}
