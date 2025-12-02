@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional, List, Dict, Any
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from pathlib import Path
 import os
 import io
 import requests
@@ -16,7 +17,11 @@ import pdfplumber  # make sure this is in requirements.txt
 
 app = FastAPI(title="Assessment Data Retriever Backend", version="2.3.0")
 # ========= FRONTEND =========
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+
+app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+
 
 
 # ========= CORS =========
@@ -71,7 +76,8 @@ def fetch_all_pages(url: str, headers: dict, params: dict = None) -> List[Any]:
 # ========= BASIC ENDPOINTS =========
 @app.get("/")
 async def root():
-    return FileResponse("frontend/index.html")
+    return FileResponse(FRONTEND_DIR / "index.html")
+
 
 
 
