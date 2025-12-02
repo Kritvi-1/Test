@@ -1,6 +1,7 @@
 // Main Application Logic
 // API Configuration
-const API_BASE_URL = 'http://localhost:8765/api';
+const API_BASE_URL = '/api';
+
 
 // Get Canvas token from sessionStorage (clears when browser closes)
 let canvasToken = sessionStorage.getItem('canvasToken');

@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://localhost:8765/api";
+const API_BASE_URL = '/api';
+
 
 class AssignmentsManager {
   constructor() {

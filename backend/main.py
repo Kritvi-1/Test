@@ -7,12 +7,17 @@ from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from typing import Optional, List, Dict, Any
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import os
 import io
 import requests
 import pdfplumber  # make sure this is in requirements.txt
 
 app = FastAPI(title="Assessment Data Retriever Backend", version="2.3.0")
+# ========= FRONTEND =========
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
 
 # ========= CORS =========
 app.add_middleware(
@@ -66,7 +71,8 @@ def fetch_all_pages(url: str, headers: dict, params: dict = None) -> List[Any]:
 # ========= BASIC ENDPOINTS =========
 @app.get("/")
 async def root():
-    return {"message": "Assessment Data Retriever Backend running ✅"}
+    return FileResponse("frontend/index.html")
+
 
 
 @app.get("/api/courses")
