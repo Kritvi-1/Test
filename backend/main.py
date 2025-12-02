@@ -77,6 +77,17 @@ def fetch_all_pages(url: str, headers: dict, params: dict = None) -> List[Any]:
 @app.get("/")
 async def root():
     return FileResponse(FRONTEND_DIR / "index.html")
+from fastapi import Request
+
+@app.get("/{page_name}.html")
+async def serve_pages(page_name: str, request: Request):
+    file_path = FRONTEND_DIR / f"{page_name}.html"
+
+    if not file_path.exists():
+        return {"detail": "Page not found"}
+
+    return FileResponse(file_path)
+
 
 
 
